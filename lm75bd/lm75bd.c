@@ -26,6 +26,9 @@ error_code_t lm75bdInit(lm75bd_config_t *config) {
 }
 
 error_code_t readTempLM75BD(uint8_t devAddr, float *temp) {
+  uint8_t reg = 0;
+  i2cSendTo(LM75BD_OBC_I2C_ADDR, &reg, 1);
+
   uint8_t buf[2];
   i2cReceiveFrom(LM75BD_OBC_I2C_ADDR, buf, 2);
 
