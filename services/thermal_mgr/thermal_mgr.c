@@ -48,14 +48,12 @@ error_code_t thermalMgrSendEvent(thermal_mgr_event_t *event) {
 }
 
 void osHandlerLM75BD(void) {
-  /* Implement this function */
   thermal_mgr_event_t event;
   event.type = THERMAL_MGR_EVENT_OS_INTERRUPT;
   thermalMgrSendEvent(&event);
 }
 
 static void thermalMgr(void *pvParameters) {
-  /* Implement this task */
   thermal_mgr_event_t event;
   while (1) {
     if (xQueueReceive(thermalMgrQueueHandle, &event, 0) == pdTRUE) {

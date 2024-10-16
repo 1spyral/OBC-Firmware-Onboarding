@@ -18,12 +18,28 @@ extern "C" {
 
 void initThermalSystemManager(lm75bd_config_t *config);
 
+/**
+ * @brief Send an event to the thermal manager queue
+ * 
+ * @param event Event struct for thermal manager
+ */
 error_code_t thermalMgrSendEvent(thermal_mgr_event_t *event);
 
+/**
+ * @brief Display a temperature reading
+ * 
+ * @param tempC The temperature to display
+ */
 void addTemperatureTelemetry(float tempC);
 
+/**
+ * @brief Display a message when reaching overtemperature shutdown
+ */
 void overTemperatureDetected(void);
 
+/**
+ * @brief Display a message when reaching hysteresis
+ */
 void safeOperatingConditions(void);
 
 #ifdef __cplusplus
