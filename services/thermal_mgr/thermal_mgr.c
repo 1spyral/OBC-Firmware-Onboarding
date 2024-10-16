@@ -67,7 +67,8 @@ static void thermalMgr(void *pvParameters) {
         float temp;
 
         LOG_IF_ERROR_CODE(readTempLM75BD(LM75BD_OBC_I2C_ADDR, &temp));
-        if (errCode == ERR_CODE_SUCCESS) addTemperatureTelemetry(temp);
+        if (errCode != ERR_CODE_SUCCESS) continue;
+        addTemperatureTelemetry(temp);
       } else if (event.type == THERMAL_MGR_EVENT_OS_INTERRUPT) {
         float temp;
 
