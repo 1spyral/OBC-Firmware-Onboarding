@@ -26,18 +26,18 @@ error_code_t lm75bdInit(lm75bd_config_t *config) {
 }
 
 error_code_t readTempLM75BD(uint8_t devAddr, float *temp) {
-  uint8_t pointerRegister = 0;
-  i2cSendTo(LM75BD_OBC_I2C_ADDR, &pointerRegister, 1);
+  error_code_t errCode;
 
-  uint8_t buf[2];
-  i2cReceiveFrom(LM75BD_OBC_I2C_ADDR, buf, 2);
+  if (temp == NULL) return ERR_CODE_INVALID_ARG;
 
-  if (!(buf[0] & 128)) {
-    *temp = 0.125 * (buf[0] << 3 | buf[1] >> 5);
-  } else {
-    *temp = -0.125 * (((buf[0] << 3 | buf[1] >> 5) ^ ((1 << 11) - 1)) + 1);
-  }
-  
+  uint8_t pointerRegister[1] = {0};
+  RETURN_IF_ERROR_CODE(i2cSendTo(LM75BD_OBC_I2C_ADDR, pointerRegister, sizeof(pointerRegister)/sizeof(uint8_t)));
+
+  uint8_t buf[2] = {0, 0};
+  RETURN_IF_ERROR_CODE(i2cReceiveFrom(LM75BD_OBC_I2C_ADDR, buf, 2));
+
+  *temp = ((int16_t)(buf[0] << 8 | buf[1]) >> 5) * 0.125;
+
   return ERR_CODE_SUCCESS;
 }
 
