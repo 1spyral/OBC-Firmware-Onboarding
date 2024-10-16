@@ -27,7 +27,7 @@ static void thermalMgr(void *pvParameters);
 void initThermalSystemManager(lm75bd_config_t *config) {
   memset(&thermalMgrTaskBuffer, 0, sizeof(thermalMgrTaskBuffer));
   memset(thermalMgrTaskStack, 0, sizeof(thermalMgrTaskStack));
-  
+
   thermalMgrTaskHandle = xTaskCreateStatic(
     thermalMgr, "thermalMgr", THERMAL_MGR_STACK_SIZE,
     config, 1, thermalMgrTaskStack, &thermalMgrTaskBuffer);
@@ -43,7 +43,7 @@ void initThermalSystemManager(lm75bd_config_t *config) {
 
 error_code_t thermalMgrSendEvent(thermal_mgr_event_t *event) {
   /* Send an event to the thermal manager queue */
-
+  xQueueSend(thermalMgrQueueHandle, event, 0);
   return ERR_CODE_SUCCESS;
 }
 
@@ -53,8 +53,16 @@ void osHandlerLM75BD(void) {
 
 static void thermalMgr(void *pvParameters) {
   /* Implement this task */
+  thermal_mgr_event_t event;
   while (1) {
-    
+    if (xQueueReceive(thermalMgrQueueHandle, &event, 0) == pdTRUE) {
+      if (event.type == THERMAL_MGR_EVENT_MEASURE_TEMP_CMD) {
+        float temp;
+
+        readTempLM75BD(LM75BD_OBC_I2C_ADDR, &temp);
+        addTemperatureTelemetry(temp);
+      }
+    }
   }
 }
 
